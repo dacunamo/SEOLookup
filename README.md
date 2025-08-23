@@ -2,6 +2,11 @@
 
 **Run with Python 3.10.8**
 
+**Create a .env with the following**
+- API_KEY="api_key"
+- MAX_PAGE_SEARCH='1'
+- ENGINE='Google'
+
 Project dependencies:
 -
 [SerpAPI](https://github.com/serpapi/serpapi-python) for google searches : 
