@@ -11,7 +11,7 @@ import dotenv
 WEBAPI = api.webSearch()
 def open_folder(folder_path:str = ""):
         path =  folder_path
-        os.startfile(path)
+        os.startfile(path) # type: ignore
 
 class ResultDialog(QDialog):
     def __init__(self, result_text, parent=None):
@@ -52,7 +52,7 @@ class SearchGui(QWidget):
 
         # Page Selection
         self.pages_select = QSpinBox()
-        self.pages_select.setValue(int(dotenv.get_key(".env","MAX_PAGE_SEARCH")))
+        self.pages_select.setValue(int(dotenv.get_key(".env","MAX_PAGE_SEARCH"))) # type: ignore
         
         # Engine Selection
         self.engine_select = QListWidget()
@@ -60,7 +60,7 @@ class SearchGui(QWidget):
 
         # Preselecting google as engine
         item = self.engine_select.item(0)
-        item.setSelected(True)
+        item.setSelected(True) # type: ignore
         self.engine_select.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
         self.engine_select.setFixedHeight(50)
 
@@ -118,7 +118,7 @@ class SearchGui(QWidget):
         for item in self.engine_select.selectedItems():
             search_engine = item.text()
             print(f"Doing search for {search_engine} engine")
-            api.set_maxpage(self.pages_select.value())
+            api.set_maxpage(str(self.pages_select.value()))
             result = WEBAPI.do_full_search(search_term,search_link,search_engine.lower())
             results.append([search_engine,result])
         dialog = ResultDialog(f"""Results {results}""")

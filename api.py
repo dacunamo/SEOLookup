@@ -11,7 +11,6 @@ import serpapi
 import json
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
-#API_KEY = "126fb128af6a14d562d9aca48d49e90d4568485940bdae9b0fcf032619a0196a"
 MAX_PAGE_SEARCH = os.getenv("MAX_PAGE_SEARCH")
 def set_maxpage(page:str):
     MAX_PAGE_SEARCH = page
@@ -73,7 +72,7 @@ class webSearch:
         self.link = link
         try:
             print(MAX_PAGE_SEARCH)
-            while page < int(MAX_PAGE_SEARCH):
+            while page < int(MAX_PAGE_SEARCH): # type: ignore
                 self.webSearch(search_parameter,page,engine)
                 if self.wasFound()[0] == True:
                     self.FOUND_POSITION = self.wasFound()[1]
@@ -82,7 +81,7 @@ class webSearch:
 
                     term = search_parameter.replace(" ","_")
                     filename = f"{self.engine}_{term}_page_{self.FOUND_PAGE}_result_{self.FOUND_POSITION}"
-                    highlighted_html = screenShot_util.highlight_html(self.getHtmlResult(),self.wasFound()[2],self.engine)
+                    highlighted_html = screenShot_util.highlight_html(str(self.getHtmlResult()),self.wasFound()[2],self.engine)
                     files.create_file(filename, "html", highlighted_html)
                     files.create_file(filename, "json", self.getJSONResult())
 
