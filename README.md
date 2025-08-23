@@ -1,6 +1,7 @@
 # SEOLookup
 
 **Run with Python 3.10.8**
+
 Project dependencies:
 -
 [SerpAPI](https://github.com/serpapi/serpapi-python) for google searches : 
