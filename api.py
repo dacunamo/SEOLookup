@@ -90,9 +90,13 @@ class webSearch:
                 page += 1
                 self.webSearch(search_parameter, page, engine)
         except Exception as e:
-
-            print("There was an error connecting to the API, check internet connection")
-            print(e)
+            print("There was an error connecting to the API \n")
+            if str(e).find("401 Client Error"):
+                print("KEY ERROR: API KEY invalid or missing\n")
+            elif str(e).find("Failed to resolve") != -1:
+                print("CONNECTION ERROR: No internet access check connection/firewall\n")
+            else: 
+                print(e)
 
     def webSearch(self, search_parameter: str = "", page: int = 0, engine: str = "google"):
         self.engine = engine
@@ -124,7 +128,7 @@ class webSearch:
             "output": 'html'
         }
         
-        print(f"Doing search on page {page+1}")
+        print(f"Doing search on page {page+1}\n")
         if engine.lower() == "google":
             self.searchResult = serpapi.search(google_params)
             self.html_output = self.searchResult

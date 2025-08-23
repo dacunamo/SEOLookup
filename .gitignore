@@ -10,3 +10,4 @@ src/resources
 src/html
 src/json
 src/screenshots
+.env
