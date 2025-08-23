@@ -13,6 +13,9 @@ load_dotenv()
 API_KEY = os.getenv("API_KEY")
 #API_KEY = "126fb128af6a14d562d9aca48d49e90d4568485940bdae9b0fcf032619a0196a"
 MAX_PAGE_SEARCH = os.getenv("MAX_PAGE_SEARCH")
+def set_maxpage(page:str):
+    MAX_PAGE_SEARCH = page
+
 
 class Parameter:
     search_parameter: str
@@ -69,9 +72,9 @@ class webSearch:
         page = 0
         self.link = link
         try:
-            self.webSearch(search_parameter,page,engine)
             print(MAX_PAGE_SEARCH)
             while page < int(MAX_PAGE_SEARCH):
+                self.webSearch(search_parameter,page,engine)
                 if self.wasFound()[0] == True:
                     self.FOUND_POSITION = self.wasFound()[1]
                     self.FOUND_PAGE = page+1
@@ -79,24 +82,20 @@ class webSearch:
 
                     term = search_parameter.replace(" ","_")
                     filename = f"{self.engine}_{term}_page_{self.FOUND_PAGE}_result_{self.FOUND_POSITION}"
-                    files.create_file(filename, "html", self.getHtmlResult())
+                    highlighted_html = screenShot_util.highlight_html(self.getHtmlResult(),self.wasFound()[2],self.engine)
+                    files.create_file(filename, "html", highlighted_html)
                     files.create_file(filename, "json", self.getJSONResult())
+
                     screenShot_util.take_screenshot(
                         filename, f"/src/html/{filename}.html"
                     )
                     return [self.FOUND_PAGE,self.FOUND_POSITION]
                 else:
-                    print(f"Not found in the first {page+1} pages.")
+                    print(f"Not found in the first {page+1} pages.\n")
                 page += 1
-                self.webSearch(search_parameter, page, engine)
         except Exception as e:
-            print("There was an error connecting to the API \n")
-            if str(e).find("401 Client Error"):
-                print("KEY ERROR: API KEY invalid or missing\n")
-            elif str(e).find("Failed to resolve") != -1:
-                print("CONNECTION ERROR: No internet access check connection/firewall\n")
-            else: 
-                print(e)
+            print(e)
+            return[e]
 
     def webSearch(self, search_parameter: str = "", page: int = 0, engine: str = "google"):
         self.engine = engine
@@ -129,22 +128,31 @@ class webSearch:
         }
         
         print(f"Doing search on page {page+1}\n")
-        if engine.lower() == "google":
-            self.searchResult = serpapi.search(google_params)
-            self.html_output = self.searchResult
-            #Setup the output to json to get the readable data in JSON format, working as a dict
-            google_params["output"]="json"
-            self.searchResult = serpapi.search(google_params)
-            self.json_output = self.searchResult
-            
-        elif engine.lower() == "bing":
-            self.searchResult = serpapi.search(bing_params)
-            self.html_output = self.searchResult
-            #Setup the output to json to get the readable data in JSON format, working as a dict
-            bing_params["output"]="json"
-            self.searchResult = serpapi.search(bing_params)
-            self.json_output = self.searchResult
-
+        try: 
+            if engine.lower() == "google":
+                self.searchResult = serpapi.search(google_params)
+                self.html_output = self.searchResult
+                #Setup the output to json to get the readable data in JSON format, working as a dict
+                google_params["output"]="json"
+                self.searchResult = serpapi.search(google_params)
+                self.json_output = self.searchResult
+                
+            elif engine.lower() == "bing":
+                self.searchResult = serpapi.search(bing_params)
+                self.html_output = self.searchResult
+                #Setup the output to json to get the readable data in JSON format, working as a dict
+                bing_params["output"]="json"
+                self.searchResult = serpapi.search(bing_params)
+                self.json_output = self.searchResult
+        except Exception as e:
+            print("There was an error connecting to the API \n")
+            if str(e).find("401 Client Error") != -1:
+                print("KEY ERROR: API KEY invalid or missing\n")
+            elif str(e).find("Failed to resolve") != -1:
+                print("CONNECTION ERROR: No internet access check connection/firewall\n")
+            else: 
+                print(e)
+            return ["API ISSUE"]
         
     def getHtmlResult(self):
         return self.html_output
@@ -160,7 +168,7 @@ class webSearch:
         for item in self.getDictResult()["organic_results"]:
             print(item["link"])
             if item["link"] == self.link:
-                return [True,item['position']]
+                return [True,item['position'],item['title']]
         return [False,0]
 
     def set_engine(self, engine: str):

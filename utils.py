@@ -68,10 +68,16 @@ def calculate_html_height(filename:str=""):
     return HEIGHT             
 
 class ScreenShot():
-    try:
+    try:    
+        print("Trying to create Pictures\\SEOLookup Directory")
         os.mkdir(f'{os.path.expanduser("~")}\\Pictures\\SEOLookup')
     except:
-        print("Directorio ya existe")
+        print("Directory already exists\n")
+    def highlight_html(self,raw_html:str,highlight_text:str,engine:str):
+        if engine == "google":
+            print(f"Replacing {highlight_text}")
+            raw_html.replace(f">{highlight_text}<",f"><mark>{highlight_text}</mark><")
+        return raw_html
 
     def take_screenshot(self,file_name:str,html_source:str):
         w_widht = 1080
@@ -97,23 +103,6 @@ class ScreenShot():
             script_path = os.path.join(WORK_DIR, "src", "screenshot.bat")
             #subprocess.call(['cmd', "/c",script_path])
             subprocess.run(f'cmd /c "{script_path}"', shell=True)
-
-
-
-    def windows_screenshot(self):
-        edge_path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
-        options = Options()
-        options.use_chromium = True  # Required for Chromium-based Edge
-        # Create service and driver
-        service = Service(WIN_EDGE_DRIVER)
-        driver = webdriver.Edge(executable_path=WIN_EDGE_DRIVER,options=options)
-        driver.get("C:\\Users\\Danie\\Downloads\\SEOLookup\\SEOLookup\\src\\html\\google_best_grounding_sheets_alternatives_page_1.html")
-        driver.execute_cdp_cmd("Page.captureScreenshot", {"format": "png", "fromSurface": True, "captureBeyondViewport": True})
-        screenshot = driver.get_screenshot_as_png()
-        with open(f"{WORK_DIR}/src/full_page_headless.png", 'wb') as f:
-            f.write(screenshot)
-        driver.quit()
-
 
 if __name__ == "__main__":
     sc = ScreenShot()

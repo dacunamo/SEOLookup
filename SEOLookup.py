@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, 
-QLabel, QDialog, QSpinBox, QListWidget, QAbstractItemView )
+QLabel, QDialog, QSpinBox, QListWidget, QAbstractItemView, QListWidgetItem )
 from PyQt6.QtCore import pyqtSignal
 import api
 import fileManagement as FM
@@ -49,20 +49,27 @@ class SearchGui(QWidget):
         # Layout
         layout = QVBoxLayout()
         options_layout = QHBoxLayout()
+
+        # Page Selection
         self.pages_select = QSpinBox()
         self.pages_select.setValue(int(dotenv.get_key(".env","MAX_PAGE_SEARCH")))
         
-        options_layout.addWidget(QLabel("Pages to search"))
-        
+        # Engine Selection
         self.engine_select = QListWidget()
-        self.engine_select.addItems(["Google","Bing"])
+        self.engine_select.addItems(["Google","Bing"]) 
+
+        # Preselecting google as engine
+        item = self.engine_select.item(0)
+        item.setSelected(True)
         self.engine_select.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
         self.engine_select.setFixedHeight(50)
 
+        options_layout.addWidget(QLabel("Pages to search"))
         options_layout.addWidget(self.pages_select)
         options_layout.addWidget(QLabel("Engine to use"))
         options_layout.addWidget(self.engine_select)
         layout.addLayout(options_layout)
+        
         # Input fields
         self.search_term_input = QLineEdit()
         self.search_link_input = QLineEdit()
@@ -111,6 +118,7 @@ class SearchGui(QWidget):
         for item in self.engine_select.selectedItems():
             search_engine = item.text()
             print(f"Doing search for {search_engine} engine")
+            api.set_maxpage(self.pages_select.value())
             result = WEBAPI.do_full_search(search_term,search_link,search_engine.lower())
             results.append([search_engine,result])
         dialog = ResultDialog(f"""Results {results}""")
