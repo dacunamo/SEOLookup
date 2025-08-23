@@ -1,0 +1,12 @@
+.venv
+build
+example files
+.env
+.git
+example files.zip
+offline
+__pycache__
+src/resources
+src/html
+src/json
+src/screenshots
