@@ -30,7 +30,7 @@ def calculate_html_height(filename:str=""):
         chrome_options.add_argument("--headless")  # Run without a visible browser window
         chrome_options.add_argument(f"--window-size={FIXED_WIDTH},5000") # Width is fixed, height is temporary
         service = Service(executable_path=LINUX_CHROME_DRIVER)
-        driver = webdriver.Chrome(executable_path=LINUX_CHROME_DRIVER, chrome_options=chrome_options)
+        driver = webdriver.Chrome(service=service, options=chrome_options)
 
     elif SYSTEM =="win32":
         # --- Setup Headless Edge for Windows---
@@ -70,8 +70,13 @@ def calculate_html_height(filename:str=""):
 class ScreenShot():
     try:    
         print("Trying to create Pictures\\SEOLookup Directory")
-        os.mkdir(f'{os.path.expanduser("~")}\\Pictures\\SEOLookup')
-    except:
+        path = f'{os.path.expanduser("~")}\\Pictures\\SEOLookup'
+        if SYSTEM == "win32": 
+            os.mkdir(path)
+        elif SYSTEM == "linux":
+            os.mkdir(path.replace('\\',"/"))
+    except Exception as e:
+        print(e)
         print("Directory already exists\n")
     def highlight_html(self,raw_html:str,highlight_text:str,engine:str):
         if engine == "google":

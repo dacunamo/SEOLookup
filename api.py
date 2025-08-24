@@ -3,12 +3,12 @@ import dotenv
 from dotenv import load_dotenv
 import fileManagement as FM
 import utils as UTILS
+import serpapi
+import json
 
 files = FM.FileHandler()
 screenShot_util = UTILS.ScreenShot()
 
-import serpapi
-import json
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
 MAX_PAGE_SEARCH = os.getenv("MAX_PAGE_SEARCH")

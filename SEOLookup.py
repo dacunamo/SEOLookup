@@ -1,5 +1,6 @@
 import sys
 import os
+import subprocess
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, 
 QLabel, QDialog, QSpinBox, QListWidget, QAbstractItemView, QListWidgetItem )
 from PyQt6.QtCore import pyqtSignal
@@ -8,10 +9,15 @@ import fileManagement as FM
 import utils as UTILS
 import dotenv
 
+SYSTEM = sys.platform
 WEBAPI = api.webSearch()
+
 def open_folder(folder_path:str = ""):
         path =  folder_path
-        os.startfile(path) # type: ignore
+        if SYSTEM == "win32":
+            os.startfile(path) # type: ignore
+        elif SYSTEM == "linux":
+            subprocess.call(["xdg-open", folder_path.replace("\\","/")])
 
 class ResultDialog(QDialog):
     def __init__(self, result_text, parent=None):
