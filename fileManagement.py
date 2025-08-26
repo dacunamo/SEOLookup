@@ -4,21 +4,24 @@ import pandas as pd
 SYSTEM = sys.platform
 WORKING_DIR = os.getcwd()
 
+def get_pictures_path():
+    # Check if OneDrive is managing Pictures
+    user_profile = os.environ.get("USERPROFILE", os.path.expanduser("~"))
+    onedrive_path = os.environ.get("OneDrive")
+    # Default Pictures path
+    default_pictures = os.path.join(user_profile, "Pictures")
+    onedrive_pictures = os.path.join(onedrive_path, "Pictures") if onedrive_path else None
+    # Use OneDrive path if it exists and is valid
+    if onedrive_pictures:
+        return os.path.join(onedrive_pictures, "SEOLookup")
+    else:
+        return os.path.join(default_pictures, "SEOLookup")
+
 def create_folders():
-    fullpath:str
-    print("Creating Pictures\\SEOLookup Directory")
-    path = f'{os.path.expanduser("~")}\\Pictures\\SEOLookup'
-    try:    
-
-        if SYSTEM == "win32": 
-            onedrive_path = os.environ.get("OneDrive")
-            onedrive_pictures = os.path.join(onedrive_path, "Pictures")
-            if onedrive_pictures and os.path.exists(onedrive_pictures):
-                fullpath == os.path.join(onedrive_pictures, "SEOLookup") 
-        elif SYSTEM == "linux":
-            fullpath = path.replace('\\',"/")
-
-        os.makedirs(path,exist_ok=True)
+    print("Creating Directory: Pictures\\SEOLookup ")
+    fullpath = get_pictures_path()
+    try:
+        os.makedirs(fullpath,exist_ok=True)
     except Exception as e:
         print(e)
         print("Directory already exists\n")

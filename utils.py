@@ -116,13 +116,16 @@ class ScreenShot():
         chromebinary_path = f"{WORK_DIR}/src/resources/chromiumbin/chromedriver_linux64/chrome-linux64/chrome"
         edge_path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
         html_file = f"file://{WORK_DIR}{str(html_source)}"
-
+        pictures_path = FM.get_pictures_path()
+        
         if SYSTEM == "linux":
-            screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
+            screenshot_fullpath = os.path.join(pictures_path,f"{file_name}.png")
+            #screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
             script = f"{chromebinary_path} --headless --disable-gpu --screenshot='{screenshot_fullpath}' --hide-scrollbars --window-size={size} '{html_file}'"
 
         elif SYSTEM =="win32":
-            screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
+            screenshot_fullpath = os.path.join(pictures_path,f"{file_name}.png")
+            #screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
             script = f'"{edge_path}" --headless --disable-gpu --screenshot="{screenshot_fullpath}" --hide-scrollbars --window-size={size} "{html_file}"'
 
         subprocess.run(script,shell=True)
