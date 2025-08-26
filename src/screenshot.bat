@@ -1,1 +1,0 @@
-"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless --disable-gpu --screenshot="C:\Users\Danie\Pictures\SEOLookup\google_car_rental_page_2_result_4.png" --hide-scrollbars --window-size=1080,2434 "file://C:\Users\Danie\Documents\SEOLookup/src/html/google_car_rental_page_2_result_4.html"
