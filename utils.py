@@ -24,6 +24,14 @@ def get_correctPath(path):
     return fileHandler.resource_path(path)
 
 def calculate_html_height(filename:str=""):
+    """Function to calculate total HTML height to take the screenshot
+
+        Args:
+            filename (str): Filename of the HTML file to calculate height
+
+        Returns:
+            HEIGHT (int): Total height of the contents
+    """
     HTML_FILE_PATH = f'src/html/{filename}.html'
     REALPATH = get_correctPath(HTML_FILE_PATH)
     FIXED_WIDTH = 1080
@@ -32,7 +40,6 @@ def calculate_html_height(filename:str=""):
     if SYSTEM =="linux":
     # --- Setup Headless Chrome for Linux---
         chrome_options = COptions()
-        print(WORK_DIR)
         chrome_options.binary_location = f"{WORK_DIR}/src/resources/chromiumbin/chromedriver_linux64/chrome-linux64/chrome"
         chrome_options.add_argument("--headless")  # Run without a visible browser window
         chrome_options.add_argument(f"--window-size={FIXED_WIDTH},5000") # Width is fixed, height is temporary
@@ -53,11 +60,8 @@ def calculate_html_height(filename:str=""):
     try:
         # Get the full, absolute path to the HTML file
         full_path = os.path.abspath(HTML_FILE_PATH)
-        print(full_path)
-        
         # Load the local HTML file
         driver.get(f"file:///{full_path}")
-
         # Use JavaScript to get the full scrollable height of the page
         # This is the most reliable way to measure the rendered content
         if filename.split("_")[0] == "google":
@@ -66,17 +70,17 @@ def calculate_html_height(filename:str=""):
         elif filename.split("_")[0] == "bing":
             height = driver.execute_script("""return document.getElementById('b_content').offsetHeight
                                        """)
-        print(f"HTML file: {HTML_FILE_PATH}")
-        print(f"Calculated height: {height+350}px")
+        #print(f"HTML file: {HTML_FILE_PATH}")
+        #print(f"Calculated height: {height+350}px")
         HEIGHT = height+350
+    except Exception as e:
+        print("ERROR AT calculate_html_height: ")
+        print(e)
+        
     finally:
         # Clean up and close the browser
         driver.quit()
-    """_summary_
 
-    Returns:
-        _type_: _description_
-    """
     return HEIGHT 
          
 
@@ -105,7 +109,6 @@ class ScreenShot():
 
     def take_screenshot(self,file_name:str,html_source:str):
         """Take a screenshot of a local HTML file
-
         Args:
             file_name (str): String of the filename
             html_source (str): Relative path of the html file, in this code located at src/html
@@ -117,7 +120,7 @@ class ScreenShot():
         edge_path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
         html_file = f"file://{WORK_DIR}{str(html_source)}"
         pictures_path = FM.get_pictures_path()
-        
+
         if SYSTEM == "linux":
             screenshot_fullpath = os.path.join(pictures_path,f"{file_name}.png")
             #screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
