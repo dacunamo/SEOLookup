@@ -1,10 +1,4 @@
-import os
-import dotenv
-from dotenv import load_dotenv
-import fileManagement as FM
-import utils as UTILS
-import serpapi
-import json
+from imports import *
 
 files = FM.FileHandler()
 screenShot_util = UTILS.ScreenShot()

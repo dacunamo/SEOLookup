@@ -1,13 +1,4 @@
-import os
-import sys
-import subprocess
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as CService
-from selenium.webdriver.chrome.options import Options as COptions
-from selenium.webdriver.edge.service import Service as EService
-from selenium.webdriver.edge.options import Options as EOptions
-import fileManagement as FM
-import re
+from imports import *
 
 SYSTEM = sys.platform
 WORK_DIR = os.getcwd()
@@ -15,6 +6,7 @@ LINUX_CHROME_DRIVER = f'{WORK_DIR}/src/resources/chromedriver-linux64/chromedriv
 WIN_EDGE_DRIVER = f"{WORK_DIR}\\src\\resources\\edgedriver\\msedgedriver.exe"
 
 fileHandler = FM.FileHandler()
+FM.create_folders()
 
 def get_correctPath(path):
     return fileHandler.resource_path(path)
@@ -24,6 +16,7 @@ def calculate_html_height(filename:str=""):
     REALPATH = get_correctPath(HTML_FILE_PATH)
     FIXED_WIDTH = 1080
     HEIGHT = 0
+    
     if SYSTEM =="linux":
     # --- Setup Headless Chrome for Linux---
         chrome_options = COptions()
@@ -67,58 +60,60 @@ def calculate_html_height(filename:str=""):
     finally:
         # Clean up and close the browser
         driver.quit()
-    return HEIGHT             
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
+    return HEIGHT 
+         
 
 class ScreenShot():
-    try:    
-        print("Trying to create Pictures\\SEOLookup Directory")
-        path = f'{os.path.expanduser("~")}\\Pictures\\SEOLookup'
-        if SYSTEM == "win32": 
-            os.mkdir(path)
-        elif SYSTEM == "linux":
-            os.mkdir(path.replace('\\',"/"))
-    except Exception as e:
-        print(e)
-        print("Directory already exists\n")
-        
+    
     def highlight_html(self,raw_html:str,highlight_text:str,engine:str):
+        """Function to highlight the text of the raw html that will be used later as a screenshot candidate
+
+        Args:
+            raw_html (str): Raw html input from an API response.
+            highlight_text (str): Text to be highlighted, due to multiple occurencies this function will check for the text
+            contained in labels ...> highlight_text <...
+            engine (str): depending on the engine the HTML format may vary. 
+
+        Returns:
+            new_html (str): Highlighted html for file creation
+        """
         if engine == "google":
             # Use word boundaries (\b) and ensure we don't break inside tags
             # Matches >text< and replaces with ><mark>text</mark><
             escaped_text = re.escape(highlight_text)
             pattern = f'>([^<]*?{escaped_text}[^<]*)<'
             replacement = r'><mark>\1</mark><'
-            raw_html = re.sub(pattern, replacement, raw_html)
-        return raw_html  # type: ignore
+            new_html = re.sub(pattern, replacement, raw_html)
+        return new_html  # type: ignore
 
     def take_screenshot(self,file_name:str,html_source:str):
+        """Take a screenshot of a local HTML file
+
+        Args:
+            file_name (str): String of the filename
+            html_source (str): Relative path of the html file, in this code located at src/html
+        """
         w_widht = 1080
         w_height = calculate_html_height(file_name)
         size = f"{w_widht},{w_height}"
         chromebinary_path = f"{WORK_DIR}/src/resources/chromiumbin/chromedriver_linux64/chrome-linux64/chrome"
         edge_path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
         html_file = f"file://{WORK_DIR}{str(html_source)}"
-        ### THRE IS NO NEED TO CREATE SEPARATE SCRIPT FILES, JUST RUN THE SCRIPT ON THE FIRST 
-        ### ARGUMENT OF subprocess.call(script,shell=True)
+
         if SYSTEM == "linux":
             screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
             script = f"{chromebinary_path} --headless --disable-gpu --screenshot='{screenshot_fullpath}' --hide-scrollbars --window-size={size} '{html_file}'"
-            #with open(f"{WORK_DIR}/src/screenshot.sh","w") as scriptFile:
-                #scriptFile.write(script) 
-            #subprocess.call(f'chmod +x {WORK_DIR}/src/screenshot.sh && {WORK_DIR}/src/screenshot.sh',shell=True) 
-            #subprocess.run(script,shell=True)
+
         elif SYSTEM =="win32":
             screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
             script = f'"{edge_path}" --headless --disable-gpu --screenshot="{screenshot_fullpath}" --hide-scrollbars --window-size={size} "{html_file}"'
-            #with open(f"{WORK_DIR}\\src\\screenshot.bat","w") as scriptFile:
-                #scriptFile.write(script) 
-            
-            #script_path = os.path.join(WORK_DIR, "src", "screenshot.bat")
-            #subprocess.call(['cmd', "/c",script_path])
-            #subprocess.run(f'cmd /c "{script_path}"', shell=True)
+
         subprocess.run(script,shell=True)
 if __name__ == "__main__":
     sc = ScreenShot()
-    #height = calculate_html_height("google_best_grounding_sheets_alternatives_page_1")
-    sc.take_screenshot("google_car_rental_page_1_result_4",f"\src\html\\google_car_rental_page_1_result_4.html")
-    #sc.windows_screenshot()
+    sc.take_screenshot("google_car_rental_page_2_result_4",f"\src\html\\google_car_rental_page_2_result_4.html")

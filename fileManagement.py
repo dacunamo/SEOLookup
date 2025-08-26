@@ -1,13 +1,30 @@
-import json
-import sys
-import os
-import pandas as pd
+from imports import *
 
 
+SYSTEM = sys.platform
 WORKING_DIR = os.getcwd()
+
+def create_folders():
+    fullpath:str
+    print("Creating Pictures\\SEOLookup Directory")
+    path = f'{os.path.expanduser("~")}\\Pictures\\SEOLookup'
+    try:    
+
+        if SYSTEM == "win32": 
+            onedrive_path = os.environ.get("OneDrive")
+            onedrive_pictures = os.path.join(onedrive_path, "Pictures")
+            if onedrive_pictures and os.path.exists(onedrive_pictures):
+                fullpath == os.path.join(onedrive_pictures, "SEOLookup") 
+        elif SYSTEM == "linux":
+            fullpath = path.replace('\\',"/")
+
+        os.makedirs(path,exist_ok=True)
+    except Exception as e:
+        print(e)
+        print("Directory already exists\n")
+
 class FileHandler:
     def __init__(self):
-        
         pass
 
     def create_file(self, file_name: str, file_type: str, file_data: str | dict):
@@ -27,6 +44,8 @@ class FileHandler:
     def resource_path(self,relative_path): #TO PROPERLY RECOGNIZE THE PATH FOR THE EXECUTABLE FILE
         base_path = getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
         return os.path.join(base_path, relative_path)
+    
+
 
 class ExcelHandler:
     

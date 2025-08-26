@@ -1,15 +1,32 @@
-import os
-import platform
-import sys
-print(os.getcwd())
-print(sys.platform)
+from imports import *
 
-test='HTTPSConnectionPool(host=\'serpapi.com\', port=443): ' \
-'Max retries exceeded with url: ' \
-'/search?currentUser=%5Bobject+Object%5D&api_key=126fb128af6a14d562d9aca48d49e90d4568485940bdae9b0fcf032619a0196a&engine=' \
-'google&q=s&location=Virginia%2C+United+States&gl=us&hl=en&start=0&output=html ' \
-'(Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000021371796710>: ' \
-'Failed to resolve \'serpapi.com\' ([Errno 11001] getaddrinfo failed)"))'
+SYSTEM = platform.system().lower()
 
-result = test.split(":")[-1].split("(")[0].strip()
-print(test.find("Failed to resolve") != -1)
+def get_pictures_path():
+    # Check if OneDrive is managing Pictures
+    user_profile = os.environ.get("USERPROFILE", os.path.expanduser("~"))
+    onedrive_path = os.environ.get("OneDrive")
+    print(onedrive_path)
+    # Default Pictures path
+    default_pictures = os.path.join(user_profile, "Pictures")
+    onedrive_pictures = os.path.join(onedrive_path, "Pictures") if onedrive_path else None
+    print(os.path.exists(onedrive_pictures))
+    # Use OneDrive path if it exists and is valid
+    if onedrive_pictures and os.path.exists(onedrive_pictures):
+        return os.path.join(onedrive_pictures, "SEOLookup")
+    else:
+        return os.path.join(default_pictures, "SEOLookup")
+
+try:
+    print("Trying to create Pictures\\SEOLookup Directory")
+    path = get_pictures_path()
+
+    if SYSTEM == "windows":
+        #os.makedirs(path, exist_ok=True)
+        pass
+    elif SYSTEM == "linux":
+        #os.makedirs(path.replace('\\', '/'), exist_ok=True)
+        pass
+    print(f"Directory created at: {path}")
+except Exception as e:
+    print(f"Error creating directory: {e}")

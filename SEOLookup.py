@@ -1,13 +1,4 @@
-import sys
-import os
-import subprocess
-from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, 
-QLabel, QDialog, QSpinBox, QListWidget, QAbstractItemView, QListWidgetItem )
-from PyQt6.QtCore import pyqtSignal
-import api
-import fileManagement as FM
-import utils as UTILS
-import dotenv
+from imports import *
 
 SYSTEM = sys.platform
 WEBAPI = api.webSearch()
