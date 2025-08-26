@@ -1,4 +1,14 @@
 from imports import *
+import serpapi
+# ─────────────────────────────
+# Utilities Handling
+# ─────────────────────────────
+import utils as UTILS
+# ─────────────────────────────
+# File Handling
+# ─────────────────────────────
+import fileManagement as FM
+
 
 files = FM.FileHandler()
 screenShot_util = UTILS.ScreenShot()

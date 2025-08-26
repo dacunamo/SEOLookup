@@ -1,4 +1,12 @@
 from imports import *
+import api
+# ─────────────────────────────
+# GUI (PyQt6)
+# ─────────────────────────────
+from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton, 
+QLabel, QDialog, QSpinBox, QListWidget, QAbstractItemView, QListWidgetItem )
+from PyQt6.QtCore import pyqtSignal
+
 
 SYSTEM = sys.platform
 WEBAPI = api.webSearch()

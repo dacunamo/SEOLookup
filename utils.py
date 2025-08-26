@@ -1,4 +1,16 @@
 from imports import *
+# ─────────────────────────────
+# Web Automation (Selenium)
+# ─────────────────────────────
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as CService
+from selenium.webdriver.chrome.options import Options as COptions
+from selenium.webdriver.edge.service import Service as EService
+from selenium.webdriver.edge.options import Options as EOptions
+# ─────────────────────────────
+# File Handling
+# ─────────────────────────────
+import fileManagement as FM
 
 SYSTEM = sys.platform
 WORK_DIR = os.getcwd()
