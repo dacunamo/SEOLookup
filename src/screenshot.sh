@@ -1,0 +1,1 @@
+/home/dacunamo/Downloads/SEOLookup/src/resources/chromiumbin/chromedriver_linux64/chrome-linux64/chrome --headless --disable-gpu --screenshot='/home/dacunamo/Pictures/SEOLookup/google_car_rental_page_1_result_4.png' --hide-scrollbars --window-size=1080,3397 'file:///home/dacunamo/Downloads/SEOLookup\src\html\google_car_rental_page_1_result_4.html'

@@ -2,11 +2,12 @@ import os
 import sys
 import subprocess
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.edge.service import Service
-from selenium.webdriver.edge.options import Options
+from selenium.webdriver.chrome.service import Service as CService
+from selenium.webdriver.chrome.options import Options as COptions
+from selenium.webdriver.edge.service import Service as EService
+from selenium.webdriver.edge.options import Options as EOptions
 import fileManagement as FM
+import re
 
 SYSTEM = sys.platform
 WORK_DIR = os.getcwd()
@@ -14,6 +15,7 @@ LINUX_CHROME_DRIVER = f'{WORK_DIR}/src/resources/chromedriver-linux64/chromedriv
 WIN_EDGE_DRIVER = f"{WORK_DIR}\\src\\resources\\edgedriver\\msedgedriver.exe"
 
 fileHandler = FM.FileHandler()
+
 def get_correctPath(path):
     return fileHandler.resource_path(path)
 
@@ -22,27 +24,27 @@ def calculate_html_height(filename:str=""):
     REALPATH = get_correctPath(HTML_FILE_PATH)
     FIXED_WIDTH = 1080
     HEIGHT = 0
-
     if SYSTEM =="linux":
     # --- Setup Headless Chrome for Linux---
-        chrome_options = Options()
+        chrome_options = COptions()
+        print(WORK_DIR)
         chrome_options.binary_location = f"{WORK_DIR}/src/resources/chromiumbin/chromedriver_linux64/chrome-linux64/chrome"
         chrome_options.add_argument("--headless")  # Run without a visible browser window
         chrome_options.add_argument(f"--window-size={FIXED_WIDTH},5000") # Width is fixed, height is temporary
-        service = Service(executable_path=LINUX_CHROME_DRIVER)
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-
+        chrome_service = CService(executable_path=LINUX_CHROME_DRIVER)
+        driver = webdriver.Chrome(service=chrome_service,options=chrome_options)
+        
     elif SYSTEM =="win32":
         # --- Setup Headless Edge for Windows---
         edge_path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
-        options = Options()
-        options.binary_location = edge_path
-        options.add_argument("--headless")
-        options.add_argument(f"--window-size={FIXED_WIDTH},5000")
-        options.use_chromium = True  # Required for Chromium-based Edge
+        edge_options = EOptions()
+        edge_options.binary_location = edge_path
+        edge_options.add_argument("--headless")
+        edge_options.add_argument(f"--window-size={FIXED_WIDTH},5000")
+        edge_options.use_chromium = True  # Required for Chromium-based Edge
         # Create service and driver
-        service = Service(executable_path=WIN_EDGE_DRIVER)
-        driver = webdriver.Edge(service=service,options=options)
+        service = EService(executable_path=WIN_EDGE_DRIVER)
+        driver = webdriver.Edge(service=service,options=edge_options)
     try:
         # Get the full, absolute path to the HTML file
         full_path = os.path.abspath(HTML_FILE_PATH)
@@ -78,17 +80,22 @@ class ScreenShot():
     except Exception as e:
         print(e)
         print("Directory already exists\n")
+        
     def highlight_html(self,raw_html:str,highlight_text:str,engine:str):
         if engine == "google":
-            print(f"Replacing {highlight_text}")
-            raw_html.replace(f">{highlight_text}<",f"><mark>{highlight_text}</mark><")
-        return raw_html
+            # Use word boundaries (\b) and ensure we don't break inside tags
+            # Matches >text< and replaces with ><mark>text</mark><
+            escaped_text = re.escape(highlight_text)
+            pattern = f'>([^<]*?{escaped_text}[^<]*)<'
+            replacement = r'><mark>\1</mark><'
+            raw_html = re.sub(pattern, replacement, raw_html)
+        return raw_html  # type: ignore
 
     def take_screenshot(self,file_name:str,html_source:str):
         w_widht = 1080
         w_height = calculate_html_height(file_name)
         size = f"{w_widht},{w_height}"
-        chromebinary_path = f"{WORK_DIR}\\src\\resources\\chromiumbin\\chromedriver_linux64\\chrome-linux64\\chrome"
+        chromebinary_path = f"{WORK_DIR}/src/resources/chromiumbin/chromedriver_linux64/chrome-linux64/chrome"
         edge_path = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"
         html_file = f"file://{WORK_DIR}{str(html_source)}"
         ### THRE IS NO NEED TO CREATE SEPARATE SCRIPT FILES, JUST RUN THE SCRIPT ON THE FIRST 
@@ -96,22 +103,22 @@ class ScreenShot():
         if SYSTEM == "linux":
             screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
             script = f"{chromebinary_path} --headless --disable-gpu --screenshot='{screenshot_fullpath}' --hide-scrollbars --window-size={size} '{html_file}'"
-            with open(f"{WORK_DIR}/src/screenshot.sh","w") as scriptFile:
-                scriptFile.write(script) 
-            subprocess.call(f'chmod +x {WORK_DIR}/src/screenshot.sh && {WORK_DIR}/src/screenshot.sh',shell=True) 
-
+            #with open(f"{WORK_DIR}/src/screenshot.sh","w") as scriptFile:
+                #scriptFile.write(script) 
+            #subprocess.call(f'chmod +x {WORK_DIR}/src/screenshot.sh && {WORK_DIR}/src/screenshot.sh',shell=True) 
+            #subprocess.run(script,shell=True)
         elif SYSTEM =="win32":
             screenshot_fullpath = os.path.join(os.path.expanduser("~"),"Pictures","SEOLookup",f"{file_name}.png")
             script = f'"{edge_path}" --headless --disable-gpu --screenshot="{screenshot_fullpath}" --hide-scrollbars --window-size={size} "{html_file}"'
-            with open(f"{WORK_DIR}\\src\\screenshot.bat","w") as scriptFile:
-                scriptFile.write(script) 
+            #with open(f"{WORK_DIR}\\src\\screenshot.bat","w") as scriptFile:
+                #scriptFile.write(script) 
             
-            script_path = os.path.join(WORK_DIR, "src", "screenshot.bat")
+            #script_path = os.path.join(WORK_DIR, "src", "screenshot.bat")
             #subprocess.call(['cmd', "/c",script_path])
-            subprocess.run(f'cmd /c "{script_path}"', shell=True)
-
+            #subprocess.run(f'cmd /c "{script_path}"', shell=True)
+        subprocess.run(script,shell=True)
 if __name__ == "__main__":
     sc = ScreenShot()
     #height = calculate_html_height("google_best_grounding_sheets_alternatives_page_1")
-    sc.take_screenshot("bing_best_grounding_sheets_alternatives_page_2_result_6",f"\src\html\\bing_best_grounding_sheets_alternatives_page_2_result_6.html")
+    sc.take_screenshot("google_car_rental_page_1_result_4",f"\src\html\\google_car_rental_page_1_result_4.html")
     #sc.windows_screenshot()

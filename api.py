@@ -81,7 +81,11 @@ class webSearch:
 
                     term = search_parameter.replace(" ","_")
                     filename = f"{self.engine}_{term}_page_{self.FOUND_PAGE}_result_{self.FOUND_POSITION}"
+                    files.create_file(f"{filename}v1","txt",str(self.getHtmlResult()))
                     highlighted_html = screenShot_util.highlight_html(str(self.getHtmlResult()),self.wasFound()[2],self.engine)
+                    files.create_file(f"{filename}v1","txt",str(highlighted_html))
+
+                    
                     files.create_file(filename, "html", highlighted_html)
                     files.create_file(filename, "json", self.getJSONResult())
 
