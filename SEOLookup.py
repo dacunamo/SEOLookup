@@ -52,7 +52,7 @@ class SearchGui(QWidget):
     def initUI(self):
         # Set up the window
         self.setWindowTitle("SEOLookup Beta 1")
-        self.setGeometry(580, 250, 600, 350)
+        self.setGeometry(580, 300, 600, 350)
 
         # Layout
         layout = QVBoxLayout()
@@ -65,6 +65,7 @@ class SearchGui(QWidget):
         # Engine Selection
         self.engine_select = QListWidget()
         self.engine_select.addItems(["Google", "Bing"])
+        self.engine_select.setFixedHeight(75)
 
         # Preselecting google as engine
         item = self.engine_select.item(0)
@@ -72,7 +73,6 @@ class SearchGui(QWidget):
         self.engine_select.setSelectionMode(
             QAbstractItemView.SelectionMode.MultiSelection
         )
-        self.engine_select.setFixedHeight(50)
 
         options_layout.addWidget(QLabel("Pages to search"))
         options_layout.addWidget(self.pages_select)
@@ -115,7 +115,7 @@ class SearchGui(QWidget):
         
         layout.addWidget(self.search_button)
         layout.addWidget(self.open_image_button)
-        layout.addWidget(self.directory_button)
+        #layout.addWidget(self.directory_button)
 
         # Connect signals and slots
         self.pages_select.valueChanged.connect(self.set_page)
