@@ -10,4 +10,5 @@ src/html
 src/json
 src/screenshots
 .env
-
+*.spec
+dist
